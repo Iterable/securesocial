@@ -16,7 +16,7 @@
  */
 package securesocial.core.providers
 
-import play.api.libs.json.{ JsError, JsObject, JsSuccess, Json, OFormat }
+import play.api.libs.json.{ JsError, JsSuccess, Json, OFormat }
 import securesocial.core._
 import securesocial.core.services.{ CacheService, RoutesService }
 
@@ -29,18 +29,25 @@ object GooglePeopleApi {
     final val EmailAddresses = "emailAddresses"
     final val Photos = "photos"
   }
+  final val SOURCE_TYPE_PROFILE = "PROFILE"
+  final val OBJECT_TYPE_PERSON = "PERSON"
 
   // https://developers.google.com/people/api/rest/v1/people
-  case class FieldMetadata(primary: Boolean)
+  case class FieldMetadata(primary: Boolean = false)
   object FieldMetadata {
-    implicit val fmt: OFormat[FieldMetadata] = Json.format[FieldMetadata]
+    implicit val fmt: OFormat[FieldMetadata] = Json.using[Json.WithDefaultValues].format[FieldMetadata]
   }
 
   trait HasFieldMetadata {
     def metadata: FieldMetadata
   }
 
-  case class Source(id: String, `type`: String)
+  case class ProfileMetadata(objectType: String)
+  object ProfileMetadata {
+    implicit val fmt: OFormat[ProfileMetadata] = Json.format[ProfileMetadata]
+  }
+
+  case class Source(id: String, `type`: String, profileMetadata: Option[ProfileMetadata])
   object Source {
     implicit val fmt: OFormat[Source] = Json.format[Source]
   }
@@ -106,10 +113,11 @@ class GoogleProvider(
   protected final def primary[T <: HasFieldMetadata](values: Seq[T]): Option[T] = values.find(_.metadata.primary)
 
   protected def fillSuccessfulProfile(me: Person, info: OAuth2Info): BasicProfile = {
-    if (me.metadata.sources.length != 1) {
-      logger.warn(s"[securesocial] person has multiple metadata sources: $me")
+    val personSourceOpt = me.metadata.sources.find(source => source.`type` == SOURCE_TYPE_PROFILE && source.profileMetadata.exists(_.objectType == OBJECT_TYPE_PERSON))
+    val userId = personSourceOpt.map(_.id).getOrElse {
+      logger.error(s"[securesocial] unable to find person metadata in Google response $me")
+      throw AuthenticationException()
     }
-    val userId = me.metadata.sources.head.id
     val name = primary(me.names)
     val firstName = name.flatMap(_.givenName)
     val lastName = name.flatMap(_.familyName)
