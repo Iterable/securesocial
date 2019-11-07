@@ -71,6 +71,10 @@ class GoogleProviderSpec extends PlaySpecification with Mockito {
            |             "GOOGLE_USER"
            |           ]
            |         }
+           |       },
+           |       {
+           |        "type": "DOMAIN_PROFILE",
+           |        "id": "not sure if this is even possible but some id other than $userId"
            |       }
            |     ],
            |     "objectType": "PERSON"
@@ -81,6 +85,17 @@ class GoogleProviderSpec extends PlaySpecification with Mockito {
            |         "primary": true,
            |         "source": {
            |           "type": "PROFILE",
+           |           "id": "$userId"
+           |         }
+           |       },
+           |       "displayName": "$fullName",
+           |       "familyName": "$lastName",
+           |       "givenName": "$firstName"
+           |     },
+           |     {
+           |       "metadata": {
+           |         "source": {
+           |           "type": "DOMAIN_PROFILE",
            |           "id": "$userId"
            |         }
            |       },
