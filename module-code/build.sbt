@@ -12,8 +12,8 @@ libraryDependencies ++= Seq(
   filters,
   specs2 % "test",
   cacheApi,
-  "com.typesafe.play" %% "play-mailer-guice" % "6.0.1", // this could be play-mailer but wouldn't have the guice module
-  "io.methvin.play" %% "autoconfig-macros" % "0.2.0" % "provided",
+  "com.typesafe.play" %% "play-mailer-guice" % "7.0.1", // this could be play-mailer but wouldn't have the guice module
+  "io.methvin.play" %% "autoconfig-macros" % "0.3.0" % "provided",
   "org.mindrot" % "jbcrypt" % "0.3m",
   "org.apache.commons" % "commons-lang3" % "3.9"
 )
@@ -66,7 +66,7 @@ pomExtra := (
   </developers>
 )
 
-scalacOptions := Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-Xmax-classfile-name","78")
+scalacOptions := Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature")
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8",  "-Xlint:-options", "-Xlint:unchecked", "-Xlint:deprecation" )
 

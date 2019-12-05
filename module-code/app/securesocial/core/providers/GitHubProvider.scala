@@ -44,7 +44,7 @@ class GitHubProvider(
 
   override protected def buildInfo(response: WSResponse): OAuth2Info = {
     val values: Map[String, String] = response.body.split("&").map(_.split("=")).withFilter(_.size == 2)
-      .map(r => (r(0), r(1)))(collection.breakOut)
+      .map(r => (r(0), r(1))).toMap
     val accessToken = values.get(OAuth2Constants.AccessToken)
     if (accessToken.isEmpty) {
       logger.error(s"[securesocial] did not get accessToken from $id")
