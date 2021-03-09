@@ -21,3 +21,8 @@ eclipse
 *.iml
 *.ipr
 *.iws
+.vscode
+.metals
+metals.sbt
+.bloop
+.hydra
